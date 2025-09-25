@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-async function detalhesLivro(req, res) {
+export async function detalhesLivro(req, res) {
     try {
         const { id } = req.params;
         const livro = await prisma.books.findUnique({
@@ -25,7 +25,7 @@ async function detalhesLivro(req, res) {
     }
 }
 
-async function listarLivros(req, res) {
+export async function listarLivros(req, res) {
     try {
         const livros = await prisma.books.findMany({
             select: {
@@ -43,15 +43,10 @@ async function listarLivros(req, res) {
     }
 }
 
-async function criarLivro(req, res) {
+export async function criarLivro(req, res) {
 
     try {
         const { titulo, autor } = req.body;
-        const usuario = req.user;
-
-        if (!usuario.isAdmin) {
-            return res.status(403).json({ erro: "Acesso negado" });
-        }
 
         if (!titulo || !autor) {
             return res.status(400).json({ erro: "Todos os campos devem ser preenchidos" });
@@ -71,15 +66,11 @@ async function criarLivro(req, res) {
     }
 }
 
-async function atualizarLivro(req, res) {
+export async function atualizarLivro(req, res) {
     try{
         const { id } = req.params;
         const { titulo, autor, available } = req.body;
-        const usuario = req.user;
-
-        if (!usuario.isAdmin) {
-            return res.status(403).json({ erro: "Acesso negado" });
-        }
+        
 
         const livroAtualizado = await prisma.books.update({
             where: { id: Number(id) },
@@ -97,14 +88,9 @@ async function atualizarLivro(req, res) {
     }
 }
 
-async function deletarLivro(req, res) {
+export async function deletarLivro(req, res) {
     try{
         const { id } = req.params;
-        const usuario = req.user;
-
-        if (!usuario.isAdmin) {
-            return res.status(403).json({ erro: "Acesso negado" });
-        }
 
         await prisma.books.delete({
             where: { id: Number(id) },
@@ -117,38 +103,36 @@ async function deletarLivro(req, res) {
     }
 }
 
-async function emprestarLivro(req, res) {
-    try{
-        const { id } = req.params;
-        const livro = await prisma.books.findUnique({
-            where: { id: Number(id) },
-        });
-        
-        if (!livro) {
-            return res.status(404).json({ erro: "Livro não encontrado" });
-        }
+export async function emprestarLivro(req, res) {
+  try {
+    const { id } = req.params;
 
-        if ('!livro.available') {
-            return res.status(400).json({ erro: "Livro indisponível" });
-        }
+    const livro = await prisma.books.findUnique({ where: { id: Number(id) } });
 
-        const livroAtualizado = await prisma.books.update({
-            where: { id: Number(id) },
-            data: {
-                available: false,
-            },
-        });
-
-        return res.json({ mensagem: "Livro emprestado com sucesso", livro: livroAtualizado });
-    } catch (error) {
-        console.error(error.message);
-        return res.status(500).json({ erro: "Erro ao emprestar livro" });
+    if (!livro) {
+      return res.status(404).json({ erro: "Livro não encontrado" });
     }
+
+    if (!livro.available) {
+      return res.status(400).json({ erro: "Livro indisponível" });
+    }
+
+    const livroAtualizado = await prisma.books.update({
+      where: { id: Number(id) },
+      data: { available: false },
+    });
+
+    return res.json({ mensagem: "Livro emprestado com sucesso", livro: livroAtualizado });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ erro: "Erro ao emprestar livro" });
+  }
 }
 
-async function devolverLivro(req, res) {
+export async function devolverLivro(req, res) {
     try{
         const { id } = req.params;
+        
         const livro = await prisma.books.findUnique({
             where: { id: Number(id) },
         });

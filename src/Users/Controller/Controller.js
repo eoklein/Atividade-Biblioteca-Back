@@ -2,15 +2,16 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-let ultimoId = 0;
-
 async function criarUsuario(req, res) {
-
     try {
-    const { nome, senha, } = req.body;
+    const { nomeUsuario, senha, } = req.body;
 
-    const usuarioExistente = await prisma.users.findUnique({
-      where: { username: nomeUsuario },
+    if (!nome || !senha) {
+      return res.status(400).json({ erro: "Nome e senha são obrigatórios" });
+    }
+
+    const usuarioExistente = await prisma.user.findUnique({
+      where: { nomeUsuario: nomeUsuario },
     });
 
     if (usuarioExistente) {
@@ -23,13 +24,13 @@ async function criarUsuario(req, res) {
             .json({ erro: "A senha deve ter pelo menos 4 caracteres" });
     }
 
-    const totalUsuarios = await prisma.users.count();
+    const totalUsuarios = await prisma.user.count();
     const isAdmin = totalUsuarios === 0;
 
-    const novoUsuario = await prisma.users.create({
+    const novoUsuario = await prisma.user.create({
       data: {
-        username: nomeUsuario,
-        password: senha,
+        nomeUsuario: nomeUsuario,
+        senha: senha,
         isAdmin,
       },
     });

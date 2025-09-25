@@ -6,9 +6,9 @@ const app = express();
 
 app.use(express.json());
 
-app.use('/Users', rotas);
+app.use('/Auth', rotas);
 
-app.use('/Livros', rotasLivros);
+app.use('/Books', rotasLivros);
 
 app.listen(3000, ()=>{
   console.log("O servidor está rodando na porta 3000 🚀");
