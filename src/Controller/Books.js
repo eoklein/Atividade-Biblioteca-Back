@@ -121,7 +121,7 @@ export async function deletarLivro(req, res) {
     }
 }
 
-export async function emprestarLivro(req, res) {
+export async function borrow(req, res) {
     try {
         const { id } = req.params;
 
@@ -157,7 +157,7 @@ export async function emprestarLivro(req, res) {
     }
 }
 
-export async function devolverLivro(req, res) {
+export async function Return(req, res) {
     try {
         const { id } = req.params;
         
