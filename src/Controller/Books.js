@@ -30,8 +30,9 @@ export async function detalhesLivro(req, res) {
 
 export async function listarLivros(req, res) {
     try {
+
         const Listar = await prisma.books.findMany()
-        console.log(Listar);
+        
         return res.json(Listar);
     } catch (error) {
         console.error(error.message);
