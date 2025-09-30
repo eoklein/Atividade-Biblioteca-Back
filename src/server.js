@@ -1,6 +1,6 @@
 import express from "express";
-import rotas from "./Router/Router.js";
-import rotasLivros from "./Livros/Router/Router.js";
+import rotas from "./Routers/Auth.js";
+import rotasLivros from "./Routers/Books.js";
 
 const app = express();
 
